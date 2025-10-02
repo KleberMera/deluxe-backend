@@ -188,7 +188,7 @@ const usuariosOtrosController = {
 
       const response = {
         success: true,
-        message: user ? 'Usuario encontrado' : 'Usuario no encontrado',
+        message: user ? 'Usuario ya registrado' : 'Usuario no encontrado',
         data: user || null,
         exists: !!user,
         brigadaInfo: {
