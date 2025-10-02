@@ -18,6 +18,9 @@ const whatsappOTPRoutes = require('./routes/whatsappOTPRoutes');
 // Nueva ruta para envío masivo
 const bulkMessagingRoutes = require('./routes/bulkMessagingRoutes');
 
+// Rutas V2
+const v2Routes = require('./v2-rest/routes/index');
+
 const app = express();
 
 // Middleware
@@ -45,6 +48,9 @@ app.use('/api/whatsapp-otp', whatsappOTPRoutes);
 // Nueva ruta para envío masivo
 app.use('/api/bulk-messaging', bulkMessagingRoutes);
 app.use('/api/admin/bingo', bingoRoutes);
+
+// Rutas V2
+app.use('/api/v2', v2Routes);
 
 // Ruta de prueba
 app.get('/api/health', (req, res) => {
