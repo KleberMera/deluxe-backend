@@ -146,6 +146,33 @@ const UsuariosOtrosSorteosModel = {
     } finally {
       connection.release();
     }
+  },
+
+  // Obtener brigada activa
+  getActiveBrigada: async () => {
+    const connection = await db.getConnection();
+    try {
+      const query = `
+        SELECT 
+          id_brigada,
+          nombre_brigada,
+          activa,
+          max_tables_per_person,
+          fecha_creacion
+        FROM brigadas 
+        WHERE activa = 1 
+        ORDER BY fecha_creacion DESC 
+        LIMIT 1
+      `;
+
+      const [rows] = await connection.execute(query);
+      return rows[0] || null;
+    } catch (error) {
+      console.error('Error al obtener brigada activa:', error);
+      throw new Error('Error al obtener brigada activa');
+    } finally {
+      connection.release();
+    }
   }
 };
 

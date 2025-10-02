@@ -117,6 +117,66 @@
 }
 ```
 
+### 🔹 **GET** `/api/v2/usuarios-otros/check/:id_card`
+**Descripción**: Verificar si un usuario existe por cédula con brigada activa
+
+**Parámetros**:
+- `id_card`: Número de cédula (10 dígitos)
+
+**Ejemplo**: `/api/v2/usuarios-otros/check/1234567890`
+
+**Respuesta exitosa** (200):
+```json
+{
+  "success": true,
+  "message": "Usuario encontrado",
+  "data": {
+    "id": 123,
+    "first_name": "Juan",
+    "last_name": "Pérez",
+    "id_card": "1234567890",
+    "phone": "0987654321",
+    "provincia_nombre": "Pichincha",
+    "canton_nombre": "Quito",
+    "barrio_nombre": "La Floresta",
+    "nombre_registrador": "Ana García",
+    "fecha_registro": "2025-10-02T10:30:00.000Z"
+  },
+  "exists": true,
+  "brigadaInfo": {
+    "id_evento": 1,
+    "nombre_brigada": "Brigada Principal",
+    "activa": true
+  }
+}
+```
+
+**Respuesta cuando no existe** (200):
+```json
+{
+  "success": true,
+  "message": "Usuario no encontrado",
+  "data": null,
+  "exists": false,
+  "brigadaInfo": {
+    "id_evento": 1,
+    "nombre_brigada": "Brigada Principal",
+    "activa": true
+  }
+}
+```
+
+**Respuesta sin brigada activa** (400):
+```json
+{
+  "success": false,
+  "message": "No hay brigadas activas disponibles",
+  "data": null,
+  "exists": false,
+  "brigadaInfo": null
+}
+```
+
 ---
 
 ## 👤 2. REGISTRADORES

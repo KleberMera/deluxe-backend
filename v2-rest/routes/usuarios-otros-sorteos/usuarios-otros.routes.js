@@ -12,6 +12,9 @@ router.post('/register', usuariosOtrosController.registerUser);
 // GET /api/v2/usuarios-otros/user/:id_card - Buscar usuario por cédula
 router.get('/user/:id_card', usuariosOtrosController.getUserByIdCard);
 
+// GET /api/v2/usuarios-otros/check/:id_card - Verificar si usuario existe con brigada activa
+router.get('/check/:id_card', usuariosOtrosController.checkUserExistsByIdCard);
+
 // GET /api/v2/usuarios-otros/users - Obtener todos los usuarios (con paginación)
 router.get('/users', usuariosOtrosController.getAllUsers);
 

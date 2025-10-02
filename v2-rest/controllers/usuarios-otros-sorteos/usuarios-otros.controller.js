@@ -153,7 +153,64 @@ const usuariosOtrosController = {
     }
   },
 
- 
+  // Verificar si un usuario existe por cédula con brigada activa
+  checkUserExistsByIdCard: async (req, res) => {
+    try {
+      const { id_card } = req.params;
+
+      if (!id_card || !/^\d{10}$/.test(id_card)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Debe proporcionar una cédula válida de 10 dígitos',
+          data: null,
+          exists: false,
+          brigadaInfo: null
+        });
+      }
+
+      // Verificar si hay brigadas activas
+      const activeBrigada = await UsuariosOtrosSorteosModel.getActiveBrigada();
+      
+      console.log(activeBrigada);
+      
+      if (!activeBrigada) {
+        return res.status(400).json({
+          success: false,
+          message: 'No hay brigadas activas disponibles',
+          data: null,
+          exists: false,
+          brigadaInfo: null
+        });
+      }
+
+      // Buscar usuario por cédula
+      const user = await UsuariosOtrosSorteosModel.findByIdCard(id_card);
+
+      const response = {
+        success: true,
+        message: user ? 'Usuario encontrado' : 'Usuario no encontrado',
+        data: user || null,
+        exists: !!user,
+        brigadaInfo: {
+          id_evento: activeBrigada.id_brigada,
+          nombre_brigada: activeBrigada.nombre_brigada,
+          activa: activeBrigada.activa
+        }
+      };
+
+      res.status(200).json(response);
+
+    } catch (error) {
+      console.error('Error en checkUserExistsByIdCard:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor',
+        data: null,
+        exists: false,
+        brigadaInfo: null
+      });
+    }
+  }
 };
 
 module.exports = usuariosOtrosController;
