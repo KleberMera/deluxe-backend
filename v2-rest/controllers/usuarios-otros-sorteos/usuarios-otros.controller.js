@@ -1,52 +1,159 @@
 // Controlador para usuarios y otros sorteos - V2
+const UsuariosOtrosSorteosModel = require('../../models/usuarios-otros-sorteos.model');
+
 const usuariosOtrosController = {
-  // Endpoint de prueba simple
-  testMessage: (req, res) => {
+  // Registrar un nuevo usuario en otros sorteos
+  registerUser: async (req, res) => {
     try {
-      const message = {
+      const {
+        first_name,
+        last_name,
+        id_card,
+        phone,
+        provincia_id,
+        canton_id,
+        barrio_id,
+        latitud,
+        longitud,
+        ubicacion_detallada,
+        id_registrador,
+        id_evento
+      } = req.body;
+
+      // Validaciones básicas
+      if (!first_name || !last_name || !id_card) {
+        return res.status(400).json({
+          success: false,
+          message: 'Los campos nombre, apellido y cédula son obligatorios'
+        });
+      }
+
+      // Validar formato de cédula (10 dígitos)
+      if (!/^\d{10}$/.test(id_card)) {
+        return res.status(400).json({
+          success: false,
+          message: 'La cédula debe tener exactamente 10 dígitos'
+        });
+      }
+
+      // Verificar si ya existe un usuario con esa cédula
+      const existingUser = await UsuariosOtrosSorteosModel.findByIdCard(id_card);
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          message: 'Ya existe un usuario registrado con esta cédula',
+          user: {
+            id: existingUser.id,
+            first_name: existingUser.first_name,
+            last_name: existingUser.last_name,
+            fecha_registro: existingUser.fecha_registro
+          }
+        });
+      }
+
+      // Crear el usuario
+      const result = await UsuariosOtrosSorteosModel.create({
+        first_name: first_name.trim(),
+        last_name: last_name.trim(),
+        id_card: id_card.trim(),
+        phone: phone?.trim(),
+        provincia_id: provincia_id || null,
+        canton_id: canton_id || null,
+        barrio_id: barrio_id || null,
+        latitud: latitud || null,
+        longitud: longitud || null,
+        ubicacion_detallada: ubicacion_detallada?.trim(),
+        id_registrador: id_registrador || null,
+        id_evento: id_evento || null
+      });
+
+      res.status(201).json({
         success: true,
-        message: "¡Hola desde la API v2! 🚀",
-        version: "2.0",
-        timestamp: new Date().toISOString(),
-        feature: "usuarios-otros-sorteos",
-        status: "funcionando correctamente"
-      };
-      
-      res.status(200).json(message);
+        message: 'Usuario registrado exitosamente en otros sorteos',
+        data: {
+          id: result.id,
+          first_name,
+          last_name,
+          id_card,
+          fecha_registro: new Date().toISOString()
+        }
+      });
+
     } catch (error) {
+      console.error('Error en registerUser:', error);
       res.status(500).json({
         success: false,
-        message: "Error en el endpoint de prueba",
-        error: error.message
+        message: error.message || 'Error interno del servidor'
       });
     }
   },
 
-  // Endpoint para obtener información del módulo
-  getModuleInfo: (req, res) => {
+  // Buscar usuario por cédula
+  getUserByIdCard: async (req, res) => {
     try {
-      const info = {
+      const { id_card } = req.params;
+
+      if (!id_card || !/^\d{10}$/.test(id_card)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Debe proporcionar una cédula válida de 10 dígitos'
+        });
+      }
+
+      const user = await UsuariosOtrosSorteosModel.findByIdCard(id_card);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Usuario no encontrado'
+        });
+      }
+
+      res.status(200).json({
         success: true,
-        module: "usuarios-otros-sorteos",
-        version: "2.0",
-        description: "Módulo para gestión de usuarios y otros tipos de sorteos",
-        endpoints: [
-          "GET /api/v2/usuarios-otros/test - Mensaje de prueba",
-          "GET /api/v2/usuarios-otros/info - Información del módulo"
-        ],
-        author: "Equipo Deluxe Backend",
-        lastUpdate: new Date().toISOString()
-      };
-      
-      res.status(200).json(info);
+        data: user
+      });
+
     } catch (error) {
+      console.error('Error en getUserByIdCard:', error);
       res.status(500).json({
         success: false,
-        message: "Error al obtener información del módulo",
-        error: error.message
+        message: 'Error interno del servidor'
       });
     }
-  }
+  },
+
+  // Obtener todos los usuarios con paginación
+  getAllUsers: async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+
+      if (page < 1 || limit < 1 || limit > 100) {
+        return res.status(400).json({
+          success: false,
+          message: 'Parámetros de paginación inválidos. Página >= 1, límite entre 1-100'
+        });
+      }
+
+      const result = await UsuariosOtrosSorteosModel.getAll(page, limit);
+
+      res.status(200).json({
+        success: true,
+        data: result.users,
+        pagination: result.pagination
+      });
+
+    } catch (error) {
+      console.error('Error en getAllUsers:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  },
+
+ 
 };
 
 module.exports = usuariosOtrosController;

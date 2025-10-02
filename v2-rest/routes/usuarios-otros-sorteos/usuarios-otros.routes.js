@@ -4,10 +4,15 @@ const usuariosOtrosController = require('../../controllers/usuarios-otros-sorteo
 
 // Rutas para usuarios y otros sorteos - V2
 
-// GET /api/v2/usuarios-otros/test - Endpoint de prueba
-router.get('/test', usuariosOtrosController.testMessage);
 
-// GET /api/v2/usuarios-otros/info - Información del módulo
-router.get('/info', usuariosOtrosController.getModuleInfo);
+
+// POST /api/v2/usuarios-otros/register - Registrar nuevo usuario
+router.post('/register', usuariosOtrosController.registerUser);
+
+// GET /api/v2/usuarios-otros/user/:id_card - Buscar usuario por cédula
+router.get('/user/:id_card', usuariosOtrosController.getUserByIdCard);
+
+// GET /api/v2/usuarios-otros/users - Obtener todos los usuarios (con paginación)
+router.get('/users', usuariosOtrosController.getAllUsers);
 
 module.exports = router;
