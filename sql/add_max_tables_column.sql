@@ -1,0 +1,2 @@
+-- Add max_tables_per_person column to brigadas table
+ALTER TABLE brigadas ADD COLUMN max_tables_per_person INT DEFAULT 1 NOT NULL COMMENT 'Maximum number of tables allowed per person for this brigada';
