@@ -16,6 +16,9 @@ router.get('/', registradorController.getAllRegistradores);
 // GET /api/v2/registradores/stats - Obtener estadísticas de registradores
 router.get('/stats', registradorController.getStats);
 
+// GET /api/v2/registradores/activos-con-tipo - Obtener registradores con tipo cuando hay brigadas activas
+router.get('/activos-con-tipo', registradorController.getRegistradoresConTipoActivos);
+
 // GET /api/v2/registradores/list - Reutilizar funcionalidad de v1 (lista simple)
 router.get('/list', registradorControllerV1.getRegistradores);
 

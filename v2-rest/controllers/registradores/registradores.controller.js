@@ -241,6 +241,37 @@ const registradorController = {
         message: 'Error interno del servidor'
       });
     }
+  },
+
+  // Obtener registradores con tipo solo cuando hay brigadas activas
+  getRegistradoresConTipoActivos: async (req, res) => {
+    try {
+      const result = await RegistradorModel.getRegistradoresConTipoActivos();
+
+      if (!result.success) {
+        return res.status(400).json({
+          success: false,
+          message: result.message,
+          data: []
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: result.message,
+        data: result.data,
+        brigadaInfo: result.brigadaInfo,
+        total: result.data.length
+      });
+
+    } catch (error) {
+      console.error('Error en getRegistradoresConTipoActivos:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor',
+        data: []
+      });
+    }
   }
 };
 

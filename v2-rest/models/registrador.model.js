@@ -193,6 +193,69 @@ const RegistradorModel = {
     } finally {
       connection.release();
     }
+  },
+
+  // Obtener registradores con tipo solo cuando hay brigadas activas
+  getRegistradoresConTipoActivos: async () => {
+    const connection = await db.getConnection();
+    try {
+      // Primero verificar si hay brigadas activas
+      const brigadaQuery = `
+        SELECT 
+          id_brigada,
+          nombre_brigada,
+          activa,
+          max_tables_per_person,
+          fecha_creacion
+        FROM brigadas 
+        WHERE activa = 1 
+        ORDER BY fecha_creacion DESC 
+        LIMIT 1
+      `;
+
+      const [brigadaRows] = await connection.execute(brigadaQuery);
+      const brigadaActiva = brigadaRows[0] || null;
+      
+      if (!brigadaActiva) {
+        return {
+          success: false,
+          message: 'No hay brigadas activas disponibles',
+          data: []
+        };
+      }
+
+      const query = `
+        SELECT 
+          r.id,
+          r.nombre_registrador,
+          r.id_tipo_registrador,
+          tr.nombre_tipo,
+          tr.descripcion as tipo_descripcion,
+          tr.activo as tipo_activo
+        FROM registrador r
+        INNER JOIN tipos_registradores tr ON r.id_tipo_registrador = tr.id
+        WHERE tr.activo = 1
+        ORDER BY r.nombre_registrador ASC
+      `;
+
+      const [rows] = await connection.execute(query);
+      
+      return {
+        success: true,
+        message: 'Registradores obtenidos exitosamente',
+        data: rows,
+        brigadaInfo: {
+          id_evento: brigadaActiva.id_brigada,
+          nombre_brigada: brigadaActiva.nombre_brigada,
+          activa: brigadaActiva.activa
+        }
+      };
+    } catch (error) {
+      console.error('Error al obtener registradores con tipo activos:', error);
+      throw new Error('Error al obtener registradores con tipo activos');
+    } finally {
+      connection.release();
+    }
   }
 };
 

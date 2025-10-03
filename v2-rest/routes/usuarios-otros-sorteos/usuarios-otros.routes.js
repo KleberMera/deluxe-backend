@@ -4,8 +4,6 @@ const usuariosOtrosController = require('../../controllers/usuarios-otros-sorteo
 
 // Rutas para usuarios y otros sorteos - V2
 
-
-
 // POST /api/v2/usuarios-otros/register - Registrar nuevo usuario
 router.post('/register', usuariosOtrosController.registerUser);
 
