@@ -5,11 +5,13 @@ const router = express.Router();
 const usuariosOtrosRoutes = require('./usuarios-otros-sorteos/usuarios-otros.routes');
 const registradoresRoutes = require('./registradores/registradores.routes');
 const tiposRegistradoresRoutes = require('./tipo-registrador/tipo-registrador.routes');
+const locationsRoutes = require('./locations/locations.routes');
 
 // Configurar rutas v2
 router.use('/usuarios-otros', usuariosOtrosRoutes);
 router.use('/registradores', registradoresRoutes);
 router.use('/tipos-registradores', tiposRegistradoresRoutes);
+router.use('/locationNew', locationsRoutes);
 
 // Ruta de información general de la API v2
 router.get('/', (req, res) => {
@@ -33,6 +35,11 @@ router.get('/', (req, res) => {
         name: "tipos-registradores",
         basePath: "/api/v2/tipos-registradores",
         description: "Gestión de tipos de registradores y categorías"
+      },
+      {
+        name: "locations",
+        basePath: "/api/v2/locations",
+        description: "Gestión de ubicaciones geográficas (provincias, cantones, barrios, parroquias, recintos)"
       }
     ],
     documentation: "Endpoints disponibles para la nueva versión de la API"

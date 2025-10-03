@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const registradorController = require('../../controllers/registradores/registradores.controller');
 
+// Importar controlador v1 para reutilizar funcionalidades específicas
+const registradorControllerV1 = require('../../../controllers/registradorController');
+
 // Rutas para registradores - V2
 
 // POST /api/v2/registradores - Crear nuevo registrador
@@ -12,6 +15,12 @@ router.get('/', registradorController.getAllRegistradores);
 
 // GET /api/v2/registradores/stats - Obtener estadísticas de registradores
 router.get('/stats', registradorController.getStats);
+
+// GET /api/v2/registradores/list - Reutilizar funcionalidad de v1 (lista simple)
+router.get('/list', registradorControllerV1.getRegistradores);
+
+// GET /api/v2/registradores/dashboard-metrics - Reutilizar métricas completas de v1
+router.get('/dashboard-metrics', registradorControllerV1.getDashboardMetrics);
 
 // GET /api/v2/registradores/:id - Obtener registrador por ID
 router.get('/:id', registradorController.getRegistradorById);
